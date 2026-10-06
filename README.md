@@ -4,11 +4,17 @@
 
 PacketGate_FullStack/
 ├── backend/
+
 │   ├── app.py
+
 │   └── requirements.txt
+
 └── frontend/
+
     ├── index.html
+    
     ├── style.css
+    
     └── script.js
 
 ## Technologies
