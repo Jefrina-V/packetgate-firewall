@@ -70,14 +70,23 @@ http://127.0.0.1:5000/api
 ## Main API endpoints
 
 GET    /api/dashboard
+
 GET    /api/rules
+
 POST   /api/rules
+
 DELETE /api/rules/<id>
+
 POST   /api/packets
+
 GET    /api/logs
+
 DELETE /api/logs
+
 PUT    /api/settings
+
 POST   /api/reset
+
 GET    /api/health
 
 ## Demonstration
