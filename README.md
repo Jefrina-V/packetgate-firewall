@@ -102,4 +102,3 @@ GET    /api/health
 9. The result is stored in Traffic Log.
 10. Dashboard statistics update automatically.
 
-Note: This is a simulator. It does not modify the operating system firewall or block real network traffic.
