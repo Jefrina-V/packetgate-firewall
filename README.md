@@ -3,6 +3,7 @@
 ## Project structure
 
 PacketGate_FullStack/
+
 ├── backend/
 
 │   ├── app.py
