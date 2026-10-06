@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PacketGate - Firewall Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-icon">P</div><div><h2>PacketGate</h2><span>Firewall Simulator</span></div></div>
+    <nav>
+      <p class="menu-title">MAIN</p>
+      <button class="nav-item active" data-page="dashboard">▣ <span>Dashboard</span></button>
+      <button class="nav-item" data-page="rules">☷ <span>Firewall Rules</span></button>
+      <button class="nav-item" data-page="simulator">⇄ <span>Packet Simulator</span></button>
+      <button class="nav-item" data-page="traffic">▤ <span>Traffic Log</span></button>
+    </nav>
+    <div class="sidebar-bottom"><div class="status-dot"></div><div><b>Firewall Online</b><small>Backend connected</small></div></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><h1 id="pageTitle">Dashboard</h1><p id="pageSubtitle">Network traffic and firewall activity</p></div>
+      <div class="top-actions">
+        <span class="live"><i></i> Live</span>
+        <span id="clock">--:--:--</span>
+        <div class="user-chip">
+          <span class="user-avatar" id="userAvatar">?</span>
+          <span class="user-name" id="usernameDisplay">Account</span>
+          <button class="logout-btn" id="logoutBtn" title="Log out">⏻ Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <section id="dashboard" class="page active-page">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon blue">⇄</div><div><span>Total Packets</span><strong id="totalPackets">0</strong><small>Processed by backend</small></div></div>
+        <div class="stat-card"><div class="stat-icon green">✓</div><div><span>Allowed</span><strong id="allowedPackets">0</strong><small>Passed firewall</small></div></div>
+        <div class="stat-card"><div class="stat-icon red">✕</div><div><span>Blocked</span><strong id="blockedPackets">0</strong><small>Rejected traffic</small></div></div>
+        <div class="stat-card"><div class="stat-icon orange">☷</div><div><span>Active Rules</span><strong id="ruleCount">0</strong><small>Loaded on server</small></div></div>
+      </div>
+      <div class="content-grid">
+        <div class="card chart-card"><div class="card-head"><div><h3>Traffic Activity</h3><p>Recent packet decisions</p></div></div><div class="chart-wrap"><canvas id="trafficChart"></canvas></div></div>
+        <div class="card"><div class="card-head"><div><h3>Recent Activity</h3><p>Latest firewall decisions</p></div><button class="text-btn" onclick="showPage('traffic')">View all</button></div><div id="recentActivity" class="activity-list"></div></div>
+      </div>
+      <div class="card"><div class="card-head"><div><h3>Firewall Rules</h3><p>Rules are checked from highest priority to lowest.</p></div><button class="text-btn" onclick="showPage('rules')">Manage rules</button></div><div class="table-wrap"><table><thead><tr><th>Priority</th><th>Action</th><th>Protocol</th><th>Source</th><th>Destination</th><th>Description</th></tr></thead><tbody id="dashboardRules"></tbody></table></div></div>
+    </section>
+
+    <section id="rules" class="page">
+      <div class="card">
+        <div class="card-head"><div><h3>Add Firewall Rule</h3><p>Create a rule to allow or block network traffic.</p></div></div>
+        <div class="form-grid">
+          <label>Action<select id="action"><option value="DENY">Deny</option><option value="ALLOW">Allow</option></select></label>
+          <label>Protocol<select id="protocol"><option value="ANY">Any</option><option value="TCP">TCP</option><option value="UDP">UDP</option><option value="ICMP">ICMP</option></select></label>
+          <label>Source IP / CIDR<input id="sourceIP" placeholder="any"></label>
+          <label>Source Port<input id="sourcePort" placeholder="any"></label>
+          <label>Destination IP / CIDR<input id="destinationIP" placeholder="any"></label>
+          <label>Destination Port<input id="destinationPort" placeholder="any"></label>
+          <label class="wide">Description<input id="description" placeholder="Example: Block Telnet traffic"></label>
+          <label>Priority<input id="priority" type="number" value="100" min="1"></label>
+        </div>
+        <button class="primary-btn" onclick="addRule()">+ Add Rule</button>
+      </div>
+      <div class="card"><div class="card-head"><div><h3>Current Firewall Rules</h3><p>Lower priority number is evaluated first.</p></div><span class="rule-total" id="rulesTotal">0 rules</span></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Priority</th><th>Action</th><th>Protocol</th><th>Source</th><th>Destination</th><th>Description</th><th></th></tr></thead><tbody id="rulesTable"></tbody></table></div></div>
+    </section>
+
+    <section id="simulator" class="page">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Live Packet Capture</h3><p>Sniff real network traffic and match it against your firewall rules automatically.</p></div>
+          <span id="captureStatus" class="capture-badge off">Off</span>
+        </div>
+        <div class="capture-controls">
+          <label class="capture-iface">Network interface (optional)<input id="captureIface" placeholder="Leave blank for default interface"></label>
+          <button id="startCaptureBtn" class="primary-btn" onclick="startCapture()">▶ Start Capture</button>
+          <button id="stopCaptureBtn" class="danger-btn hidden" onclick="stopCapture()">■ Stop Capture</button>
+        </div>
+       
+      </div>
+
+      <div class="two-column">
+        <div class="card">
+          <div class="card-head"><div><h3>Packet Simulator</h3><p>Send a test packet to the Flask backend.</p></div></div>
+          <div class="form-grid">
+            <label>Protocol<select id="packetProtocol"><option>TCP</option><option>UDP</option><option>ICMP</option></select></label>
+            <label>Direction<select id="direction"><option>Inbound</option><option>Outbound</option></select></label>
+            <label>Source IP<input id="packetSourceIP" value="203.0.113.42"></label>
+            <label>Source Port<input id="packetSourcePort" value="51422"></label>
+            <label>Destination IP<input id="packetDestinationIP" value="192.168.1.10"></label>
+            <label>Destination Port<input id="packetDestinationPort" value="443"></label>
+          </div>
+          <button class="primary-btn full-btn" onclick="sendPacket()">Send Packet</button>
+          <div id="packetResult" class="packet-result hidden"></div>
+        </div>
+        <div class="card"><div class="card-head"><div><h3>How it works</h3><p>Backend rule evaluation</p></div></div><div class="steps"><div><b>1</b><span>Browser sends packet JSON, or the live sniffer captures one</span></div><div><b>2</b><span>Backend checks rules by priority</span></div><div><b>3</b><span>First matching rule decides ALLOW or DENY</span></div><div><b>4</b><span>Decision is stored in the traffic log</span></div></div></div>
+      </div>
+    </section>
+
+    <section id="traffic" class="page">
+      <div class="card"><div class="card-head"><div><h3>Traffic Log</h3><p>Packet activity stored by the backend.</p></div><button class="danger-outline" onclick="clearLogs()">Clear Log</button></div><div id="trafficTable"></div></div>
+    </section>
+
+    
+  </main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

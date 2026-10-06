@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - PacketGate</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-body">
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <div class="brand-icon">P</div>
+      <div><h2>PacketGate</h2><span>Firewall Simulator</span></div>
+    </div>
+
+    <div class="auth-card">
+      <h1>Create an account</h1>
+      <p class="auth-sub">Set up access to the firewall dashboard.</p>
+
+      <div id="authError" class="auth-error hidden"></div>
+      <div id="authSuccess" class="auth-success hidden"></div>
+
+      <form id="signupForm">
+        <label>Username
+          <input id="username" type="text" placeholder="3-20 characters, letters/numbers/_" autocomplete="username" required>
+        </label>
+        <label>Password
+          <input id="password" type="password" placeholder="At least 6 characters" autocomplete="new-password" required>
+        </label>
+        <label>Confirm Password
+          <input id="confirmPassword" type="password" placeholder="Re-enter your password" autocomplete="new-password" required>
+        </label>
+        <button type="submit" class="primary-btn full-btn">Sign Up</button>
+      </form>
+
+      <p class="auth-switch">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+
+    <p class="auth-foot">Firewall Simulator &middot; local demo environment</p>
+  </div>
+  <script src="auth.js"></script>
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const password = document.getElementById("password").value;
+      const confirm = document.getElementById("confirmPassword").value;
+      if (password !== confirm) {
+        showAuthError("Passwords do not match.");
+        return;
+      }
+      await handleSignup(
+        document.getElementById("username").value.trim(),
+        password
+      );
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In - PacketGate</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-body">
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <div class="brand-icon">P</div>
+      <div><h2>PacketGate</h2><span>Firewall Simulator</span></div>
+    </div>
+
+    <div class="auth-card">
+      <h1>Log in</h1>
+      <p class="auth-sub">Access your firewall dashboard.</p>
+
+      <div id="authError" class="auth-error hidden"></div>
+
+      <form id="loginForm">
+        <label>Username
+          <input id="username" type="text" placeholder="Enter your username" autocomplete="username" required>
+        </label>
+        <label>Password
+          <input id="password" type="password" placeholder="Enter your password" autocomplete="current-password" required>
+        </label>
+        <button type="submit" class="primary-btn full-btn">Log In</button>
+      </form>
+
+      <p class="auth-switch">Don't have an account? <a href="signup.html">Sign up</a></p>
+    </div>
+
+    <p class="auth-foot">Firewall Simulator &middot; local demo environment</p>
+  </div>
+  <script src="auth.js"></script>
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      await handleLogin(
+        document.getElementById("username").value.trim(),
+        document.getElementById("password").value
+      );
+    });
+  </script>
+</body>
+</html>
